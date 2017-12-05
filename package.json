@@ -1,0 +1,27 @@
+{
+  "name": "mqtt_replicator",
+  "version": "0.0.1",
+  "description": "Multi master replication for all MQTT message brokers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d lib"
+  },
+  "keywords": [
+    "mqtt",
+    "distributed",
+    "resilient",
+    "replication",
+    "mq"
+  ],
+  "author": "",
+  "license": "CECILL-B",
+  "dependencies": {
+    "mqtt": "^2.14.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0"
+  }
+}
