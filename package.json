@@ -17,7 +17,11 @@
   "author": "",
   "license": "CECILL-B",
   "dependencies": {
-    "mqtt": "^2.14.0"
+    "dotenv": "^4.0.0",
+    "emittery": "^0.2.0",
+    "mqtt": "^2.14.0",
+    "shortid": "^2.2.8",
+    "sillyid": "^0.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
