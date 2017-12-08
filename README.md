@@ -11,7 +11,15 @@ The configuration
 |`MQTTREP_CONFIG_{name}`|Configuration object *(optional)*|Configuration of the message broker connection, in the JSON format. See the [MQTT.js documentation](https://github.com/mqttjs/MQTT.js#client) for a description of all possible options. `maxQos` is an aditionnal  parameter which specify the maximum quality of service level supported by the message broker.|`{"username":"root", "password":"hunter2", "maxQos": 1}`|
 |`MQTTREP_TOPIC_{id}`|Topic path *(required)*|MQTT topic path. May use `+` and `#` wildcard characters. `{id}` is an identifier that must be unique and shared with the other settings for the topic.|`canards/+`|
 |`MQTTREP_RETAIN_{id}`|Boolean *(optional)*|If set to true, all messages on this topic will be retained.|`true` or `false`|
+|`MQTTREP_QOS_{id}`|`0`, `1`, or `2` *(optional, default to `1`)*|Quality of service.|`2`|
+|`MQTTREP_TTL_{id}`|Number in seconds *(optional, default to infinity)*|If set to a number, time before a message on its topic is automatically erased by publishing an empty message on the same topic.|`1200`|
 |`MQTTREP_NOSUB_{id}`|Boolean *(optional)*|If set to true, the topic will not be subscribed. It is useful to use specific settings on a more specific path, when a more generic path is already subscribed.|`MQTTREP_TOPIC_A = canards/+`, `MQTTREP_TOPIC_B = canards/name`, `MQTTREP_NOSUB_B = true`, and `MQTTREP_RETAIN_B = true`. Only `canards/name` messages will be retained, and only `canards/+` subscription will be registered to the messages brokers.|
+|`MQTTREP_SUBSCRIBE_WHITELIST_{id}`|Comma seperated list of `{name}` message brokers. *(optional)*|Only the message brokers in the list will subscribe to the topic associated to `{id}`|`MQTTREP_SUBSCRIBE_WHITELIST_B = BROKEROSLO,BROKERPARIS`|
+|`MQTTREP_SUBSCRIBE_BLACKLIST_{id}`|Comma seperated list of `{name}` message brokers. *(optional)*|The message brokers in the list will not subscribe to the topic associated to `{id}`|`MQTTREP_SUBSCRIBE_BLACKLIST_B = BROKERQUEBEC`|
+|`MQTTREP_PUBLISH_WHITELIST_{id}`|Comma seperated list of `{name}` message brokers. *(optional)*|Only the message brokers in the list may publish to the topic associated to `{id}`|`MQTTREP_PUBLISH_WHITELIST_B = BROKEROSLO,BROKERPARIS`|
+|`MQTTREP_PULISH_BLACKLIST_{id}`|Comma seperated list of `{name}` message brokers. *(optional)*|The message brokers in the list cannot publish to the topic associated to `{id}`|`MQTTREP_SUBSCRIBE_BLACKLIST_B = BROKERQUEBEC`|
+|`MQTTREP_MERGE_FREQUENCY`|Frequency in Hz (float). *(optional, default to `1`)*|The frequency at which the replication is trigerred. Too high frequencies may trigger unecessary synchronizations due to networks latencies.|`16.666`|
+
 
 ## It supports *almost all* MQTT message brokers
 
