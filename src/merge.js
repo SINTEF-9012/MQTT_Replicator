@@ -17,5 +17,7 @@ export default function merge(diff) {
         }
     });
 
+    console.log(`Et l'heureux gagnant est :::: ${selectedPacked.topic}:${selectedPacked.payload}`);
+
     return selectedPacked;
 }

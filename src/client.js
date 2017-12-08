@@ -69,6 +69,7 @@ export default class Client {
     onMessage(topic, message, packet) {
         console.log(`${this.name}|${topic}|${message}|${packet.qos}|${packet.retain}`);
 
+        // We ignore system packets 
         if (topic.startsWith("$SYS/") || topic.startsWith("ActiveMQ/")) {
             console.log("sys");
             return;
@@ -81,6 +82,7 @@ export default class Client {
             return;
         }
 
+        // Create a new packet with only the clean required information
         let cleanPacket = {
             receivedTimestamp: +new Date(),
             qos: packet.qos,
@@ -88,9 +90,10 @@ export default class Client {
             payload: packet.payload,
         };
 
+        // Set the cache
         this.cache.set(topic, cleanPacket);
-        console.log("message");
 
+        // Broadcast the events
         this.events.emit('message', cleanPacket);
         this.events.emit(previousPacketOnThisTopic ? 'update' : 'new', cleanPacket);
 

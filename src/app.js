@@ -1,8 +1,9 @@
 import starter from './starter.js';
 import Concierge from './concierge.js';
 
-let clients = starter();
-let concierge = new Concierge(clients);
+const { clients, mergeFrequencyHz } = starter();
+
+const concierge = new Concierge(clients, (1.0 / mergeFrequencyHz) * 1000.0);
 
 function broadcast(packet, retain = false, clientToIgnore = null) {
     clients.forEach((client) => {
