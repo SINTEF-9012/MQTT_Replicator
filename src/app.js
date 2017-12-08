@@ -19,7 +19,7 @@ clients.forEach((client) => {
 
     client.connect();
 
-    const topicsPulishBlacklist = [];
+    const topicsPublishBlacklist = [];
     const topicsPublishRetainList = [];
     const topicsPublishQosList = [];
     const topicsPublishTTLList = [];
@@ -36,7 +36,7 @@ clients.forEach((client) => {
         // Generate list of blacklist topics to publish in
         if ((topic.publishWhitelist && !topic.publishWhitelist.has(client.name)) ||
             (topic.publishBlacklist && topic.publishBlacklist.has(client.name))) {
-            topicsPulishBlacklist.push(topic);
+            topicsPublishBlacklist.push(topic);
         } else {
             topicsPublishQosList.push(topic);
             topicsPublishTTLList.push(topic);
@@ -49,7 +49,7 @@ clients.forEach((client) => {
 
     client.setTopicsQos(topicsPublishQosList);
     client.setTopicsTTL(topicsPublishTTLList);
-    client.setTopicsBlacklist(topicsPulishBlacklist);
+    client.setTopicsBlacklist(topicsPublishBlacklist);
     client.setTopicsRetain(topicsPublishRetainList);
 
     //client.subscribe("#", 2);
