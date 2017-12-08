@@ -48,7 +48,9 @@ export default class Client {
 
     subscribe(topic, qos = 1) {
         if (!this.mqttClient) return;
-        this.mqttClient.subscribe(topic, { qos });
+        this.mqttClient.subscribe(topic, {
+            qos: this.mqttOptions.maxQos ? Math.min(qos, this.mqttOptions.maxQos) : qos,
+        });
     }
 
     publish(packet, ignoreCache = false) {
