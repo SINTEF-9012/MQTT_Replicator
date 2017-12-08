@@ -2,8 +2,15 @@ import shortid from 'shortid';
 import sillyid from 'sillyid';
 import mqtt from 'mqtt';
 import Emittery from 'emittery';
+import qlobber from 'qlobber';
 
 import Packet from './packet.js';
+
+const qlobberSettingsForMqtt = {
+    separator: '/',
+    wildcard_one: '+',
+    wildcard_some: '#'
+};
 
 export default class Client {
 
@@ -24,6 +31,11 @@ export default class Client {
         this.events = new Emittery();
 
         this.lastConnectionTimestamp = 0;
+
+        this.qosMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
+        this.ttlMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
+        this.blacklistMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
+        this.retainMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
     }
 
     connect() {
@@ -39,10 +51,16 @@ export default class Client {
         this.mqttClient.subscribe(topic, { qos });
     }
 
-    publish(packet, retain = false, ignoreCache = false) {
+    publish(packet, ignoreCache = false) {
         if (!this.mqttClient) return;
 
         const topic = packet.topic;
+
+        if (this.blacklistMatcher.test(topic, true)) {
+            console.log(`Blacklisted topic: ${topic} for ${this.name}`);
+            return;
+        }
+
         if (!ignoreCache) {
             const previousPacket = this.cache.get(topic);
             if (previousPacket && Packet.equals(previousPacket, packet)) {
@@ -50,6 +68,11 @@ export default class Client {
                 console.log("ignored duplicate", topic, this.name);
                 return;
             }
+        }
+
+        let retain = this.retainMatcher.test(topic, true);
+        if (retain) {
+            console.log(`RETAIAIIIIIIIIIIIIIIIIIIIIIIIIIIN ${packet.topic} ${packet.payload}`)
         }
 
         //console.log("Message on " + packet.topic + ": " + packet.payload.toString());
@@ -109,5 +132,29 @@ export default class Client {
 
     getPacketFromTopic(topic) {
         return this.cache.get(topic);
+    }
+
+    setTopicsQos(topics) {
+        topics.forEach((topic) => {
+            this.qosMatcher.add(topic.topic, topic.qos);
+        });
+    }
+
+    setTopicsTTL(topics) {
+        topics.forEach((topic) => {
+            this.ttlMatcher.add(topic.topic, topic.ttl);
+        });
+    }
+
+    setTopicsBlacklist(topics) {
+        topics.forEach((topic) => {
+            this.blacklistMatcher.add(topic.topic, true);
+        });
+    }
+
+    setTopicsRetain(topics) {
+        topics.forEach((topic) => {
+            this.retainMatcher.add(topic.topic, true);
+        });
     }
 }

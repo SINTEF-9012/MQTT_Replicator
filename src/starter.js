@@ -39,21 +39,34 @@ export default function starter() {
                     name,
                     topic: value,
                     qos: parseInt(process.env[`MQTTREP_QOS_${name}`] || 1, 10),
-                    persistent: process.env[`MQTTREP_PERSISTENT_${name}`] === "true",
+                    retain: process.env[`MQTTREP_RETAIN_${name}`] === "true",
                     ttl: parseInt(process.env[`MQTTREP_TTL_${name}`] || 1200, 10),
+                    nosub: process.env[`MQTTREP_NOSUB_${name}`] === "true",
                 };
 
-                const whitelist = (process.env[`MQTTREP_WHITELIST_${name}`] || '')
+                const subscribeWhitelist = (process.env[`MQTTREP_SUBSCRIBE_WHITELIST_${name}`] || '')
                     .split(',').map(s => s.trim()).filter(s => s.length);
-                const blacklist = (process.env[`MQTTREP_BLACKLIST_${name}`] || '')
+                const subscribeBlacklist = (process.env[`MQTTREP_SUBSCRIBE_BLACKLIST_${name}`] || '')
+                    .split(',').map(s => s.trim()).filter(s => s.length);
+                const publishWhitelist = (process.env[`MQTTREP_PUBLISH_WHITELIST_${name}`] || '')
+                    .split(',').map(s => s.trim()).filter(s => s.length);
+                const publishBlacklist = (process.env[`MQTTREP_PUBLISH_BLACKLIST_${name}`] || '')
                     .split(',').map(s => s.trim()).filter(s => s.length);
 
-                if (whitelist.length) {
-                    topic.whitelist = new Set(whitelist);
+                if (subscribeWhitelist.length) {
+                    topic.subscribeWhitelist = new Set(subscribeWhitelist);
                 }
 
-                if (blacklist.length) {
-                    topic.blacklist = new Set(blacklist);
+                if (subscribeBlacklist.length) {
+                    topic.subscribeBlacklist = new Set(subscribeBlacklist);
+                }
+
+                if (publishWhitelist.length) {
+                    topic.publishWhitelist = new Set(publishWhitelist);
+                }
+
+                if (publishBlacklist.length) {
+                    topic.publishBlacklist = new Set(publishBlacklist);
                 }
 
                 topics.push(topic);
