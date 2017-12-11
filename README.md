@@ -1,5 +1,5 @@
 # MQTT_Replicator
-Multi master replication for all MQTT message brokers.
+Multi master replication for all MQTT message brokers, using the MQTT protocol.
 
 ![](https://user-images.githubusercontent.com/45740/33769467-ff0e2174-dc32-11e7-9aca-a013d6aceb4d.png)
 
