@@ -1,4 +1,3 @@
-import Emittery from 'emittery';
 import EventEmitter from 'events';
 
 import diff from './diff.js';
@@ -24,8 +23,6 @@ export default class Concierge {
         this.clients = clients;
         clients.forEach(this._registerClient.bind(this));
 
-        // Event handler, using emittery for no good reason
-        //this.events = new Emittery();
         this.events = new EventEmitter();
 
         // La mort (the death) is responsible to kill and destroy

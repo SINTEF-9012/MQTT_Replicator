@@ -18,7 +18,6 @@
   "license": "CECILL-B",
   "dependencies": {
     "dotenv": "^4.0.0",
-    "emittery": "^0.2.0",
     "mqtt": "^2.14.0",
     "qlobber": "^2.0.0",
     "shortid": "^2.2.8",

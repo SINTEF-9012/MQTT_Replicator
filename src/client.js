@@ -1,7 +1,6 @@
 import shortid from 'shortid';
 import sillyid from 'sillyid';
 import mqtt from 'mqtt';
-import Emittery from 'emittery';
 import EventEmitter from 'events';
 import qlobber from 'qlobber';
 
@@ -29,7 +28,6 @@ export default class Client {
         // The cache is used to store incomming packets
         this.cache = new Map();
 
-        //this.events = new Emittery();
         this.events = new EventEmitter();
 
         this.lastConnectionTimestamp = 0;
