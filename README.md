@@ -3,6 +3,35 @@ Multi master replication for all MQTT message brokers.
 
 ![](https://user-images.githubusercontent.com/45740/33769467-ff0e2174-dc32-11e7-9aca-a013d6aceb4d.png)
 
+## Eventual consistency or optimistic replication
+
+The system may converge to a consistent dataset, but does not provide any guarantie to do so.
+
+## Reconciliation
+
+The default *(and currently only available)* reconciliation algorithm is *last writer wins*.
+
+Potential algorithms:
+
+ * Last writer wins (network latency or network issues may trigger inconsistent states).
+ * Having a timestamps in the messages (requires clock synchronization).
+ * Having a serial number in the messages (may have collisions).
+ * A combinaison of all of these.
+
+From a publisher point of view, publishing the message at a specific interval, even when its content has not changed, is a good and simple solution to have a high probability to have it replicated correctly.
+
+It is also advised to have only one publisher per topic.
+
+## TTls and deleted messages
+
+Replicating deleted messages in a light and simple fashion is possible using different approaches :
+
+**Nothing specific**: Very simple solution but in some cases, a deleted message may appear again because the system forgot it was deleted.
+
+**À la CouchDB**: The clients does not delete the messages, but update them with a specific content saying that they have been deleted. `{"_deleted":true}` for example. The clients should then filter incomming messages to ignored the deleted ones. This may not work when messages using differents topics are often deleted.
+
+**Messages have a life time**: Messages are always automatically deleted when their topic has been inactive for a specific amount of time. All deleted messages will be eventually deleted. However, messages which should not be deleted must be published again by the clients. This feature may be enabled only on specific topics patterns.
+
 ## Configuration
 
 MQTT Replicator may be configured using variable environments.
