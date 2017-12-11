@@ -34,7 +34,6 @@ export default class LaMort {
             return;
         }
 
-        console.log("watch", maxTTL);
         const previousTimeout = this.timeoutsMap.get(name);
         if (previousTimeout) {
             clearTimeout(previousTimeout);

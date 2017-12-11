@@ -23,10 +23,13 @@
   "license": "CECILL-B",
   "dependencies": {
     "dotenv": "^4.0.0",
+    "loglevel": "^1.6.0",
+    "loglevel-message-prefix": "^3.0.0",
     "mqtt": "^2.14.0",
     "qlobber": "^2.0.0",
     "shortid": "^2.2.8",
-    "sillyid": "^0.2.0"
+    "sillyid": "^0.2.0",
+    "winston": "^3.0.0-rc1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

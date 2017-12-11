@@ -1,3 +1,5 @@
+import log from './logger.js';
+
 export default function merge(diff) {
 
     // Just take the most recent message for the time being
@@ -17,7 +19,7 @@ export default function merge(diff) {
         }
     });
 
-    console.log(`Et l'heureux gagnant est :::: ${selectedPacked.topic}:${selectedPacked.payload}`);
+    log.debug(`Synchronizing "${selectedPacked.topic}" with "${selectedPacked.payload}`)
 
     return selectedPacked;
 }

@@ -22,14 +22,7 @@ export default function diff(clients, topic) {
         }
     });
 
-    messages.forEach((m) => {
-        if (m[0] !== undefined)
-            console.log(`${m[0].topic} ${m[0].payload}: ${m[1].length}`)
-        else {
-            console.log("undefined " + m[1].length)
-            console.log(m[1])
-        }
-    });
+
 
     return messages;
 }

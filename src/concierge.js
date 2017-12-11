@@ -77,6 +77,7 @@ export default class Concierge {
                     topic,
                     payload: '',
                     qos: 1,
+                    // Deletions are always retained
                     retain: true,
                 });
             });
@@ -85,16 +86,12 @@ export default class Concierge {
 
         if (this.dirtyTopics.size !== 0) {
             this.dirtyTopics.forEach(topic => {
-                console.log("topic: " + topic);
 
                 const d = diff(this.clients, topic);
-                console.log("==================", d.length);
-                console.log(d);
+
                 if (d.length < 2) return;
+
                 const m = merge(d);
-                console.log("++++++++++++++++++");
-                console.log("++++++++++++++++++", m);
-                //console.log(m);
                 this.events.emit('sync', m);
 
 

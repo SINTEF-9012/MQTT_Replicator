@@ -1,6 +1,9 @@
 import starter from './starter.js';
 import Concierge from './concierge.js';
 import LaMort from './lamort.js';
+import log from './logger.js';
+
+log.info("Started");
 
 const { clients, mergeFrequencyHz, topics } = starter();
 
@@ -46,15 +49,13 @@ clients.forEach((client) => {
     client.setTopicsRetain(topicsPublishRetainList);
 });
 
-function broadcast(packet, clientToIgnore = null) {
-    clients.forEach((client) => {
-        if (client !== clientToIgnore) {
-            client.publish(packet);
-        }
-    });
-}
-
 concierge.events.on('sync', (merge) => {
-    console.log(`Broadcasting: ${merge.topic}/${merge.payload}`);
-    broadcast(merge);
+    log.debug('Broadcasting', {
+        topic: merge.topic,
+        payload: merge.payload
+    });
+
+    clients.forEach(client => {
+        client.publish(merge);
+    });
 })

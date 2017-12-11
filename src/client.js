@@ -5,6 +5,7 @@ import EventEmitter from 'events';
 import qlobber from 'qlobber';
 
 import Packet from './packet.js';
+import log from './logger.js';
 
 const qlobberSettingsForMqtt = {
     separator: '/',
@@ -58,25 +59,21 @@ export default class Client {
         const topic = packet.topic;
 
         if (this.blacklistMatcher.test(topic, true)) {
-            console.log(`Blacklisted topic: ${topic} for ${this.name}`);
+            log.debug(`Blacklisted topic "${topic}" for ${this.name}`);
             return;
         }
 
         if (!ignoreCache) {
             const previousPacket = this.cache.get(topic);
             if (previousPacket && Packet.equals(previousPacket, packet)) {
-                //console.log(previousPacket.payload.toString(), packet.payload.toString())
-                console.log("ignored duplicate", topic, this.name);
+                log.debug(`Ignored duplicate on topic "${topic}" for ${this.name}`);
                 return;
             }
         }
 
         let retain = this.retainMatcher.test(topic, true);
-        if (retain) {
-            console.log(`RETAIAIIIIIIIIIIIIIIIIIIIIIIIIIIN ${packet.topic} ${packet.payload}`)
-        }
 
-        console.log("Message on " + packet.topic + ": " + packet.payload.toString());
+        log.debug(`Publishing message on topic "${topic}" with payload "${packet.payload}" for ${this.name}`)
         this.mqttClient.publish(packet.topic, packet.payload, {
             qos: this.mqttOptions.maxQos ? Math.min(packet.qos, this.mqttOptions.maxQos) : packet.qos,
             retain,
@@ -86,16 +83,15 @@ export default class Client {
     }
 
     onConnect() {
-        console.log(`${this.name} has connected.`);
+        log.info(`Client ${this.name} has connected.`)
         this.lastConnectionTimestamp = +new Date();
     }
 
     onMessage(topic, message, packet) {
-        console.log(`${this.name}|${topic}|${message}|${packet.qos}|${packet.retain}`);
+        log.debug(`Received ${this.name}|${topic}|${message}|qos:${packet.qos}|retain:${packet.retain}`);
 
         // We ignore system packets 
         if (topic.startsWith("$SYS/") || topic.startsWith("ActiveMQ/")) {
-            console.log("sys");
             return;
         }
 
@@ -125,11 +121,11 @@ export default class Client {
     }
 
     onError(error) {
-        console.log(`${this.name} has encountered an error: ${error}`);
+        log.error(`Client ${this.name} has encountered an error: ${error}.`)
     }
 
     onClose() {
-        console.log(`${this.name} has closed.`);
+        log.warn(`Client ${this.name} has disconnected.`)
     }
 
     getPacketFromTopic(topic) {

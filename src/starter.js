@@ -1,4 +1,5 @@
 import Client from './client.js';
+import log from './logger.js';
 
 // Each client is a process environment variable
 const mqttrep_env_match = /^MQTTREP_(CLIENT|TOPIC)_(\w+)$/;
@@ -27,7 +28,7 @@ export default function starter() {
                     try {
                         config = JSON.parse(process.env[configPath]);
                     } catch (e) {
-                        console.log(`Unable to parse the configuration ${configPath}: ${e.message}`);
+                        log.error(`Unable to parse the configuration ${configPath}: ${e.message}`);
                     }
                 }
 
