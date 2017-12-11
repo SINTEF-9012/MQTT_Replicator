@@ -1,19 +1,15 @@
 import starter from './starter.js';
 import Concierge from './concierge.js';
+import LaMort from './lamort.js';
 
 const { clients, mergeFrequencyHz, topics } = starter();
 
-const concierge = new Concierge(clients, (1.0 / mergeFrequencyHz) * 1000.0);
+const lamort = new LaMort();
+const concierge = new Concierge(clients, lamort, (1.0 / mergeFrequencyHz) * 1000.0);
 
-function broadcast(packet, clientToIgnore = null) {
-    clients.forEach((client) => {
-        if (client !== clientToIgnore) {
-            client.publish(packet);
-        }
-    });
-}
-
-
+topics.forEach(topic => {
+    lamort.registerTopicTTl(topic.topic, topic.ttl);
+});
 
 clients.forEach((client) => {
 
@@ -22,7 +18,6 @@ clients.forEach((client) => {
     const topicsPublishBlacklist = [];
     const topicsPublishRetainList = [];
     const topicsPublishQosList = [];
-    const topicsPublishTTLList = [];
 
     topics.forEach((topic) => {
         // Subscribe if whitelisted or not blacklisted,
@@ -39,7 +34,6 @@ clients.forEach((client) => {
             topicsPublishBlacklist.push(topic);
         } else {
             topicsPublishQosList.push(topic);
-            topicsPublishTTLList.push(topic);
             if (topic.retain) {
                 topicsPublishRetainList.push(topic);
             }
@@ -48,18 +42,19 @@ clients.forEach((client) => {
     });
 
     client.setTopicsQos(topicsPublishQosList);
-    client.setTopicsTTL(topicsPublishTTLList);
     client.setTopicsBlacklist(topicsPublishBlacklist);
     client.setTopicsRetain(topicsPublishRetainList);
-
-    //client.subscribe("#", 2);
-    /*client.events.on('message', (packet) => {
-        console.log(`Broadcasting from ${client.name}: ${packet.topic}/${packet.payload}`);
-        broadcast(packet, client);
-    });*/
 });
 
-concierge.events.on('merge', (merge) => {
+function broadcast(packet, clientToIgnore = null) {
+    clients.forEach((client) => {
+        if (client !== clientToIgnore) {
+            client.publish(packet);
+        }
+    });
+}
+
+concierge.events.on('sync', (merge) => {
     console.log(`Broadcasting: ${merge.topic}/${merge.payload}`);
     broadcast(merge);
 })

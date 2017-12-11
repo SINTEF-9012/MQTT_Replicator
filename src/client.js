@@ -2,6 +2,7 @@ import shortid from 'shortid';
 import sillyid from 'sillyid';
 import mqtt from 'mqtt';
 import Emittery from 'emittery';
+import EventEmitter from 'events';
 import qlobber from 'qlobber';
 
 import Packet from './packet.js';
@@ -28,12 +29,12 @@ export default class Client {
         // The cache is used to store incomming packets
         this.cache = new Map();
 
-        this.events = new Emittery();
+        //this.events = new Emittery();
+        this.events = new EventEmitter();
 
         this.lastConnectionTimestamp = 0;
 
         this.qosMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
-        this.ttlMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
         this.blacklistMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
         this.retainMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
     }
@@ -77,7 +78,7 @@ export default class Client {
             console.log(`RETAIAIIIIIIIIIIIIIIIIIIIIIIIIIIN ${packet.topic} ${packet.payload}`)
         }
 
-        //console.log("Message on " + packet.topic + ": " + packet.payload.toString());
+        console.log("Message on " + packet.topic + ": " + packet.payload.toString());
         this.mqttClient.publish(packet.topic, packet.payload, {
             qos: this.mqttOptions.maxQos ? Math.min(packet.qos, this.mqttOptions.maxQos) : packet.qos,
             retain,
@@ -104,6 +105,7 @@ export default class Client {
 
         // If it's a duplicate
         if (previousPacketOnThisTopic && Packet.equals(previousPacketOnThisTopic, packet)) {
+            this.events.emit('duplicate', packet);
             return;
         }
 
@@ -139,12 +141,6 @@ export default class Client {
     setTopicsQos(topics) {
         topics.forEach((topic) => {
             this.qosMatcher.add(topic.topic, topic.qos);
-        });
-    }
-
-    setTopicsTTL(topics) {
-        topics.forEach((topic) => {
-            this.ttlMatcher.add(topic.topic, topic.ttl);
         });
     }
 

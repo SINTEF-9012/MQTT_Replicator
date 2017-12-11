@@ -40,7 +40,7 @@ export default function starter() {
                     topic: value,
                     qos: parseInt(process.env[`MQTTREP_QOS_${name}`] || 1, 10),
                     retain: process.env[`MQTTREP_RETAIN_${name}`] === "true",
-                    ttl: parseInt(process.env[`MQTTREP_TTL_${name}`] || 1200, 10),
+                    ttl: parseInt(process.env[`MQTTREP_TTL_${name}`] || 0, 10) * 1000,
                     nosub: process.env[`MQTTREP_NOSUB_${name}`] === "true",
                 };
 
