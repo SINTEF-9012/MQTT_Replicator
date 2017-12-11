@@ -71,3 +71,7 @@ MQTT Replicator may be configured using variable environments.
 ### Unique Client IDs
 
 If the clientId is not configured in the `MQTTREP_CONFIG_{name}` object, a random clientId is generated. It will use the name and some random values in the format `{name}_{adjective}_{adjective}_{animal}_mqttreplicator_{randomid}`. For example: `brokeroslo_dependable_naughty_amurratsnake_mqttreplicator_HygHEYWObz`.
+
+### Acknowledgements
+
+This library is developed in context of the [ANYWHERE](http://anywhere-h2020.eu/) project.
