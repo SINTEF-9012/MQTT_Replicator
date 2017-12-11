@@ -28,7 +28,7 @@ Replicating deleted messages in a light and simple fashion is possible using dif
 
 **Nothing specific**: Very simple solution but in some cases, a deleted message may appear again because the system forgot it was deleted.
 
-**À la CouchDB**: The clients does not delete the messages, but update them with a specific content saying that they have been deleted. `{"_deleted":true}` for example. The clients should then filter incomming messages to ignored the deleted ones. This may not work when messages using differents topics are often deleted.
+**À la CouchDB**: The clients does not delete the messages, but update them with a specific content saying that they have been deleted. `{"_deleted":true}` for example. The clients should then filter incomming messages to ignore the deleted ones. This may not work when messages using differents topics are often deleted.
 
 **Messages have a life time**: Messages are always automatically deleted when their topic has been inactive for a specific amount of time. All deleted messages will be eventually deleted. However, messages which should not be deleted must be published again by the clients. This feature may be enabled only on specific topics patterns.
 
