@@ -76,7 +76,7 @@ export default function starter() {
 
     }
     if (clients.length === 0) {
-        console.log("No client has been configured.");
+        log.warn("No client has been configured.");
     }
 
     const mergeFrequencyHz = parseFloat(process.env.MQTT_REPLICATOR_MERGE_FREQUENCY || 1);
