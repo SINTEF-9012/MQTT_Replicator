@@ -2,6 +2,6 @@ pipeline:
   docker:
     image: plugins/docker
     repo: registry.sintef.cloud/mqtt_replicator
-    tags: "${DRONE_BRANCH/\//-}"
+    tags: ${DRONE_BRANCH/\//-}
     registry: registry.sintef.cloud
     secrets: [ docker_username, docker_password ]
