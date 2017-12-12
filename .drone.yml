@@ -1,0 +1,7 @@
+pipeline:
+  docker:
+    image: plugins/docker
+    repo: registry.sintef.cloud/hello_from_alpine
+    tags: latest
+    registry: registry.sintef.cloud
+    secrets: [ docker_username, docker_password ]
