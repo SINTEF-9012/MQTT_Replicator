@@ -91,7 +91,7 @@ export default class Client {
         log.debug(`Received message on topic "${topic}" with payload "${message}",${packet.retain ? ' retained' : ''} and qos ${packet.qos} for ${this.name}`);
 
         // We ignore system packets 
-        if (topic.startsWith("$SYS/") || topic.startsWith("ActiveMQ/")) {
+        if (topic.startsWith("$") || topic.startsWith("ActiveMQ/")) {
             return;
         }
 
