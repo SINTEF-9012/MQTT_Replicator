@@ -50,12 +50,9 @@ clients.forEach((client) => {
 });
 
 concierge.events.on('sync', (merge) => {
-    log.debug('Broadcasting', {
-        topic: merge.topic,
-        payload: merge.payload
-    });
+    log.debug(`Broadcasting message "${merge.topic}" with payload "${merge.payload}"`);
 
     clients.forEach(client => {
         client.publish(merge);
     });
-})
+});

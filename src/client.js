@@ -88,7 +88,7 @@ export default class Client {
     }
 
     onMessage(topic, message, packet) {
-        log.debug(`Received ${this.name}|${topic}|${message}|qos:${packet.qos}|retain:${packet.retain}`);
+        log.debug(`Received message on topic "${topic}" with payload "${message}",${packet.retain ? ' retained' : ''} and qos ${packet.qos} for ${this.name}`);
 
         // We ignore system packets 
         if (topic.startsWith("$SYS/") || topic.startsWith("ActiveMQ/")) {
