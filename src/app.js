@@ -1,6 +1,7 @@
 import starter from './starter.js';
 import Concierge from './concierge.js';
 import LaMort from './lamort.js';
+import Merge from './merge.js';
 import log from './logger.js';
 
 log.info("Started");
@@ -8,7 +9,8 @@ log.info("Started");
 const { clients, mergeFrequencyHz, topics } = starter();
 
 const lamort = new LaMort();
-const concierge = new Concierge(clients, lamort, (1.0 / mergeFrequencyHz) * 1000.0);
+const merge = new Merge(topics);
+const concierge = new Concierge(clients, merge, lamort, (1.0 / mergeFrequencyHz) * 1000.0);
 
 topics.forEach(topic => {
     lamort.registerTopicTTl(topic.topic, topic.ttl);

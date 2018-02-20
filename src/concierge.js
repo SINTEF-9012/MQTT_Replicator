@@ -1,11 +1,10 @@
 import EventEmitter from 'events';
 
 import diff from './diff.js';
-import merge from './merge.js';
 
 export default class Concierge {
 
-    constructor(clients = [], mort, watchInterval = 250) {
+    constructor(clients = [], merge, mort, watchInterval = 250) {
         // Set of all the active topics (were we received messages)
         // Reset after every watch
         this.activeTopics = new Set();
@@ -35,6 +34,7 @@ export default class Concierge {
         // Start the watch interval
         setInterval(this.watch.bind(this), watchInterval);
 
+        this.merge = merge;
     }
 
     // Register a client
@@ -91,7 +91,7 @@ export default class Concierge {
 
                 if (d.length < 2) return;
 
-                const m = merge(d);
+                const m = this.merge.process(topic, d);
                 this.events.emit('sync', m);
 
 

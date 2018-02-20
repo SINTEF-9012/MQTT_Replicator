@@ -2,16 +2,10 @@ import shortid from 'shortid';
 import sillyid from 'sillyid';
 import mqtt from 'mqtt';
 import EventEmitter from 'events';
-import qlobber from 'qlobber';
 
 import Packet from './packet.js';
 import log from './logger.js';
-
-const qlobberSettingsForMqtt = {
-    separator: '/',
-    wildcard_one: '+',
-    wildcard_some: '#'
-};
+import newMatcher from './matcher.js';
 
 export default class Client {
 
@@ -33,9 +27,9 @@ export default class Client {
 
         this.lastConnectionTimestamp = 0;
 
-        this.qosMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
-        this.blacklistMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
-        this.retainMatcher = new qlobber.Qlobber(qlobberSettingsForMqtt);
+        this.qosMatcher = newMatcher();
+        this.blacklistMatcher = newMatcher();
+        this.retainMatcher = newMatcher();
     }
 
     connect() {
@@ -65,7 +59,7 @@ export default class Client {
 
         if (!ignoreCache) {
             const previousPacket = this.cache.get(topic);
-            if (previousPacket && Packet.equals(previousPacket, packet)) {
+            if (previousPacket && Packet.equals(previousPacket, packet, false)) {
                 log.debug(`Ignored duplicate on topic "${topic}" for ${this.name}`);
                 return;
             }
@@ -100,6 +94,7 @@ export default class Client {
         // If it's a duplicate
         if (previousPacketOnThisTopic && Packet.equals(previousPacketOnThisTopic, packet)) {
             this.events.emit('duplicate', packet);
+            console.log("duplicate");
             return;
         }
 

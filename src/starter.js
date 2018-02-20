@@ -43,6 +43,7 @@ export default function starter() {
                     retain: process.env[`MQTTREP_RETAIN_${name}`] === "true",
                     ttl: parseInt(process.env[`MQTTREP_TTL_${name}`] || 0, 10) * 1000,
                     nosub: process.env[`MQTTREP_NOSUB_${name}`] === "true",
+                    merge: process.env[`MQTTREP_MERGE_${name}`] || 'lastwin',
                 };
 
                 const subscribeWhitelist = (process.env[`MQTTREP_SUBSCRIBE_WHITELIST_${name}`] || '')
