@@ -17,7 +17,7 @@ export default class Packet {
                     // Compare string messages
                     (a.payload instanceof String &&
                         b.payload instanceof String &&
-                        a === b.payload
+                        a.payload === b.payload
                     )
                     ||
                     // Empty binary and empty string messages
@@ -25,7 +25,8 @@ export default class Packet {
                     (
                         a.payload !== undefined &&
                         b.payload !== undefined &&
-                        a.payload.length === b.payload.length
+                        a.payload.length === 0 &&
+                        b.payload.length === 0
                     )
                 ));
     }
