@@ -131,6 +131,7 @@ export default class Client {
             this.mqttOptions._clientId = this.mqttOptions.clientId;
         }
 
+        this.mqttOptions.reconnectPeriod = 1000 * Math.min(this.nbDisconnections, 15);
         this.mqttOptions.clientId = this.mqttOptions._clientId + '-' + this.nbDisconnections;
     }
 
