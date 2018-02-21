@@ -13,6 +13,8 @@ export default class Client {
         this.name = name;
         this.path = path;
         this.mqttOptions = mqttOptions || {};
+        this.nbConnections = 0;
+        this.nbDisconnections = 0;
 
         // Generating a beautiful clientId
         if (!mqttOptions.clientId) {
@@ -59,7 +61,7 @@ export default class Client {
 
         if (!ignoreCache) {
             const previousPacket = this.cache.get(topic);
-            if (previousPacket && Packet.equals(previousPacket, packet, false)) {
+            if (previousPacket && Packet.equals(previousPacket, packet)) {
                 log.debug(`Ignored duplicate on topic "${topic}" for ${this.name}`);
                 return;
             }
@@ -79,6 +81,7 @@ export default class Client {
     onConnect() {
         log.info(`Client ${this.name} has connected.`)
         this.lastConnectionTimestamp = +new Date();
+        ++this.nbConnections;
     }
 
     onMessage(topic, message, packet) {
@@ -94,7 +97,6 @@ export default class Client {
         // If it's a duplicate
         if (previousPacketOnThisTopic && Packet.equals(previousPacketOnThisTopic, packet)) {
             this.events.emit('duplicate', packet);
-            console.log("duplicate");
             return;
         }
 
@@ -116,11 +118,20 @@ export default class Client {
     }
 
     onError(error) {
-        log.error(`Client ${this.name} has encountered an error: ${error}.`)
+        log.error(`Client ${this.name} has encountered an error: ${error}.`);
     }
 
     onClose() {
-        log.warn(`Client ${this.name} has disconnected.`)
+        ++this.nbDisconnections;
+        log.warn(`Client ${this.name} has disconnected ${this.nbDisconnections} times.`);
+
+        // Increment the client ID because some Message Broker refuses new connections with existing
+        // clients IDs
+        if (!this.mqttOptions._clientId) {
+            this.mqttOptions._clientId = this.mqttOptions.clientId;
+        }
+
+        this.mqttOptions.clientId = this.mqttOptions._clientId + '-' + this.nbDisconnections;
     }
 
     getPacketFromTopic(topic) {
