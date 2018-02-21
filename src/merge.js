@@ -1,5 +1,55 @@
 import log from './logger.js';
 import newMatcher from './matcher.js';
+import get from 'lodash.get';
+
+function latestSelector(a, b) {
+    return a.receivedTimestamp > b.receivedTimestamp ? a : b;
+}
+
+function biggestBinarySelector(a, b) {
+    return Buffer.compare(a.payload, b.payload) > 0 ? a : b;
+}
+
+function biggestJsonSelector(path, a, b) {
+    let jsonA = {};
+    let jsonB = {};
+
+    try {
+        jsonA = JSON.parse(a.payload);
+    } catch (e) { }
+
+    try {
+        jsonB = JSON.parse(b.payload);
+    } catch (e) { }
+
+    const valueA = get(jsonA, path, -Number.MAX_VALUE);
+    const valueB = get(jsonB, path, -Number.MAX_VALUE);
+
+    if (valueA > valueB) {
+        return a;
+    } else if (valueA < valueB) {
+        return b;
+    }
+
+    return latestSelector(a, b);
+}
+
+function selectPacket(diff, selector) {
+    // TODO empty payloads that are more recents than all other messages ?
+    let selectedPacked;
+
+    diff.forEach(([packet, clients]) => {
+        if (packet && packet.payload) {
+            if (selectedPacked) {
+                selectedPacked = selector(packet, selectedPacked);
+            } else {
+                selectedPacked = packet;
+            }
+        }
+    });
+
+    return selectedPacked;
+}
 
 export default class Merge {
     constructor(topics) {
@@ -36,53 +86,26 @@ export default class Merge {
     }
 
 
+
     // Biggest can be useful to compare two values
     // The bigger one is prioritized
     // This can be useful with data containing a timestamp or a
     // counter that is incremented
     // Should not be used for temperatures or similar
     biggest(diff) {
-
-        // TODO empty payloads that are more recents than all other messages ?
-        let selectedPacked;
-
-        diff.forEach(([packet, clients]) => {
-            if (packet && packet.payload) {
-                if (selectedPacked) {
-                    let diff = Buffer.compare(packet.payload, selectedPacked.payload);
-                    if (diff > 0) {
-                        selectedPacked = packet;
-                    }
-                } else {
-                    selectedPacked = packet;
-                }
-            }
-        });
-
-        return selectedPacked;
+        return selectPacket(diff, biggestBinarySelector)
     }
 
-    jsonbiggest() {
-
+    jsonbiggest(settings, diff) {
+        return selectPacket(diff, biggestJsonSelector.bind(null, settings));
     }
 
-    geobufbiggest() {
-
+    geobufbiggest(settings, diff) {
+        return biggest(diff);
     }
 
     lastwin(diff) {
-        let maxT = 0;
-        let selectedPacked;
-
-        diff.forEach(([packet, clients]) => {
-            let t = packet && packet.receivedTimestamp || 0;
-            if (t > maxT) {
-                selectedPacked = packet;
-                maxT = t;
-            }
-        });
-
-        return selectedPacked;
+        return selectPacket(diff, latestSelector);
     }
 
     // Chaos
